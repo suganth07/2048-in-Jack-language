@@ -1,0 +1,171 @@
+//  Stuff
+
+/** 2048 game manager. */
+class TwosGame {
+   // Game board
+   field String titleString;
+   field String instructionString;
+   field String startString;
+   field Board board;
+   field boolean loseCondition,winCondition;
+   field Board board_old;
+   field boolean loseCondition_old,winCondition_old;
+   field int winThreshold;
+   field int nrows, ncols;
+
+   constructor TwosGame new() {
+      let titleString = "= = = 2 0 4 8 = = =";
+      let startString = "Press spacebar to start...";
+      
+      // Print main screen
+      //22,63
+      do Output.moveCursor(1,20);
+      do Output.printString(titleString);
+
+      let nrows = 4;
+      let ncols = 4;
+      let winThreshold = 15;
+
+      do init();
+
+      return this;
+   }
+
+   method void init() {
+      let loseCondition = false;
+      let winCondition = false;
+      let board = Board.new(nrows, ncols);
+      let board_old = Board.new(nrows, ncols);
+      return;
+   }
+
+   /** Main game.
+       Has two phases: start screen and game loop.
+       Start screen also helps to seed the PRNG. */
+   method void run() {
+      var Board board_new;
+      var char key;
+      var boolean started, exit;
+      var int initSeed;
+      var boolean filled, sameAsBefore;
+      var int dir;
+
+      let started = false;
+      let exit = false;
+      let initSeed = 0;
+
+      // Start screen
+      while (~started) {
+         do Output.moveCursor(11, 19);
+         do Output.printString(startString);
+
+         // Wait for key to be pressed
+         while (key = 0) {
+            let key = Keyboard.keyPressed();
+            let initSeed = initSeed + 1;
+         }
+
+         if (key = 32) {  // spacebar
+            do Random.setSeed(initSeed);
+            let started = true;
+         }
+
+         // Wait for key to be released
+         while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+         }
+      }
+
+      do board.initialize();
+
+      // Game loop
+      while (~exit) {
+         // Wait for key to be pressed
+         while (key = 0) {
+            let key = Keyboard.keyPressed();
+            // other actions while key is not pressed
+         }
+         if ((key > 129) & (key < 134)) {  // arrows
+
+            let board_new = BoardOps.alter(board, key - 129);
+
+            if (board_new.sameAs(board)) {
+               do board_new.dispose();
+               let filled = false;
+            }
+            else {
+               do board_old.dispose();
+               let board_old = board;
+               let board = board_new;
+               do board.print();
+               do Sys.wait(50);
+               let filled = board.populateRNG();
+            }
+
+            // check win condition
+            do checkWinCondition();
+            if (~filled) {
+               do checkLoseCondition();
+            }
+
+            do board.print();
+
+            // print status according to condition
+            if (winCondition) {
+               do Output.moveCursor(13, 23);
+               do Output.printString("Y O U   W I N ! !");
+               let exit=true;
+            }
+            else {
+               if (loseCondition) {
+                  do Output.moveCursor(13, 23);
+                  do Output.printString("G A M E   O V E R");
+                  let exit=true;
+               }
+            }
+
+         }
+
+         // Wait for key to be released
+         while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+         }
+      }
+
+      return;
+   }
+
+   method void checkWinCondition() {
+      // let winCondition_old = winCondition;
+      let winCondition = board.containsBiggerThan(winThreshold);
+      return;
+   }
+
+   method void checkLoseCondition() {
+      var int dir;
+      var Board board_alt;
+
+      let loseCondition = true;
+      let dir = 1;
+      while (dir < 5) {
+         let board_alt = BoardOps.alter(board, dir);
+         if (~(board.sameAs(board_alt))) {
+            let loseCondition = false;
+            let dir = 5;
+         }
+         do board_alt.dispose();
+         let dir = dir + 1;
+      }
+      return;
+   }
+
+   method void dispose() {
+      do titleString.dispose();
+      do instructionString.dispose();
+      do startString.dispose();
+      do board.dispose();
+
+      do Memory.deAlloc(this);
+      return;
+   }
+}

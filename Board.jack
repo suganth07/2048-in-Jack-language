@@ -1,0 +1,320 @@
+// The 2048 game board consisting of nrows x ncols blocks.
+
+/** Implements a graphical board. */
+class Board {
+   static int sum,val;
+   field int nrows, ncols;
+   field int rOffset, cOffset;  // Parameters for drawing the board.
+   field Array grid;
+
+   /** Constructs a new board with a given number of rows and columns. */
+   constructor Board new(int Arows, int Acols) {
+      var int i, j,k;
+      var Array row,blocks;
+
+      let nrows = Arows;
+      let ncols = Acols;
+      let grid = Array.new(nrows);
+
+      // Initialize grid with Blocks.
+
+      let i = 0;
+      while (i < nrows) {
+         let row = Array.new(ncols);
+         let j = 0;
+         while (j < ncols) {
+            let grid[i] = row;
+            let row[j] = Block.new();
+            let j = j + 1;
+         }
+         let i = i + 1;
+      }
+      let rOffset = 5;
+      let cOffset = 17;
+
+      if(sum=0){
+
+      let blocks = Array.new(nrows * ncols);
+
+        let k = 0;
+        while (k < (nrows * ncols)) {
+            let blocks[k] = Block.new();
+            let k = k + 1;
+        }
+        do first();
+      }
+
+      return this;
+   }
+
+   method int getNrows() {
+      return nrows;
+   }
+
+   method int getNcols() {
+      return ncols;
+   }
+
+   /** Get Block at row r, column c. */
+   method Block getBlockAt(int r, int c) {
+      var Array row;
+      var Block block;
+
+      let row = grid[r];
+      let block = row[c];
+      return block;
+   }
+
+   /** Set value v to Block at position r, c. */
+   method void setBlock(int v, int r, int c) {
+      var Block block;
+      let block = getBlockAt(r, c);
+      do block.setValue(v);
+      return;
+   }
+
+   method void first() {
+        var int r, c;
+
+         let r = Random.rand();
+         let c = Random.rand();
+         let r = r - (r / nrows * nrows);
+         let c = c - (c / ncols * ncols);
+
+         do setBlock(2, r, c);
+         // do Output.printInt(c);
+        return;
+    }
+
+   /** Populate board, pseudo-randomly. */
+   method boolean populateRNG() {
+      var Block currBlock;
+      var int r, c,temp;
+      var boolean done;
+
+      let done = false;
+      while (~done) {
+         let r = Random.rand();
+         
+         let temp=sum/10;
+         let val=sum-(temp*10);
+
+         let c = Random.rand();
+         let r = r - (r / nrows * nrows);
+         let c = c - (c / ncols * ncols);
+         let currBlock = getBlockAt(r, c);
+         if (sum=0 & currBlock.isEmpty()){
+            do setBlock(2, r, c);
+            let sum=sum+1;
+            let done = true;
+         } 
+         if (val=0 & currBlock.isEmpty()){
+            do setBlock(-2, r, c);
+            let sum=sum+1;
+            let done = true;
+         }
+         else{
+            if(currBlock.isEmpty()){
+               if(val=5){
+                  do setBlock(-2, r, c);
+                  let done = true;
+                  let sum=sum+1;
+               }
+               else{
+                  do setBlock(2, r, c);
+                  let done = true;
+                  let sum=sum+1;
+               }
+            }
+            else {
+               if (isFull()) {
+                  let sum=sum+1;
+                  return false;
+               }
+            }
+         }
+      }
+      return done;
+   }
+
+   /** Returns true if board is currently full. */
+   method boolean isFull() {
+      var boolean full;
+      var int r, c;
+      var Block currBlock;
+
+      let full = true;
+      let r = 0;
+      while (r < nrows) {
+         let c = 0;
+         while (c < ncols) {
+            let currBlock = getBlockAt(r, c);
+            if (currBlock.isEmpty()) {
+               let full = false;
+               let c = ncols;
+               let r = nrows;
+            }
+            let c = c + 1;
+         }
+         let r = r + 1;
+      }
+      return full;
+   }
+
+   /** Returns true if this board is same as other board. */
+   method boolean sameAs(Board other) {
+      var boolean same;
+      var int r, c;
+      var Block ourBlock, theirBlock;
+
+      let same = true;
+      let r = 0;
+      while (r < nrows) {
+         let c = 0;
+         while (c < ncols) {
+            let ourBlock = getBlockAt(r, c);
+            let theirBlock = other.getBlockAt(r, c);
+            if (~(ourBlock.getValue() = theirBlock.getValue())) {
+               let same = false;
+               let c = ncols;
+               let r = nrows;
+            }
+            let c = c + 1;
+         }
+         let r = r + 1;
+      }
+      return same;
+   }
+
+   /** Returns true if board contains value higher than threshold. */
+   method boolean containsBiggerThan(int threshold) {
+      var int r, c;
+      var boolean contains;
+      var Block block;
+
+      let contains = false;
+      let r = 0;
+      while (r < nrows) {
+         let c = 0;
+         while (c < ncols) {
+            let block = getBlockAt(r, c);
+            if (block.getValue() > threshold) {
+               let contains = true;
+               let c = ncols;
+               let r = nrows;
+            }
+            let c = c + 1;
+         }
+         let r = r + 1;
+      }
+      return contains;
+   }
+
+   /** Initialize board. */
+   method void initialize() {
+      do populateRNG();
+      do print();
+      return;
+   }
+
+   method boolean isEmptyAt(int r, int c) {
+      var Block block;
+      let block = getBlockAt(r, c);
+      return block.isEmpty();
+   }
+
+   /** Dispose this board. */
+   method void dispose() {
+      var Array row;
+      var Block block;
+      var int r, c;
+
+      let r = 0;
+      while (r < nrows) {
+         let row = grid[r];
+         let c = 0;
+         while (c < ncols) {
+            let block = row[c];
+            do block.dispose();
+            let c = c + 1;
+         }
+         do row.dispose();
+         let r = r + 1;
+      }
+      do grid.dispose();
+
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   /** Print a blank space c times.
+       Helper for Board.print() below. */
+   function void printOffset(int c) {
+      var String space;
+      var int ci;
+
+      let space = " ";
+      let ci = 0;
+      while (ci < c) {
+         do Output.printString(space);
+         let ci = ci + 1;
+      }
+
+      do space.dispose();
+      return;
+   }
+
+   /** Draw the board on the screen. */
+   method void print() {
+      var int r, c, p, CHAR_WIDTH;
+      var Block currBlock;
+      var String wall, leftPillar, centerPillar;
+
+      let leftPillar = "| ";
+      let centerPillar = " | ";
+
+      // Set starting point for cursor
+      do Output.moveCursor(rOffset, 0);
+      do Board.printOffset(cOffset);
+      
+      let CHAR_WIDTH = (Block.getMaxLength() + 3) * ncols + 1;
+      let wall = String.new(CHAR_WIDTH);
+
+
+      // Make hyphen wall for separating rows
+      let p = 0;
+      while (p < CHAR_WIDTH) {
+         do wall.appendChar(45);  // "-"
+         let p = p + 1;
+      }
+
+      let r = 0;
+      while (r < nrows) {
+         do Output.printString(wall);
+         do Output.println();      // New line
+         do Output.println();      // New line
+         do Board.printOffset(cOffset);
+         do Output.printString(leftPillar);
+         let c = 0;
+         while (c < ncols) {
+            let currBlock = getBlockAt(r, c);
+            do currBlock.print();
+            do Output.printString(centerPillar);
+            let c = c + 1;
+         }qwertyuiopmkk
+         do Output.println();      // New line
+         do Output.println();      // New line
+         do Board.printOffset(cOffset);
+
+         let r = r + 1;
+      }
+      do Output.printString(wall);
+      // do Output.println();      // New line
+      // do Board.printOffset(cOffset);
+
+      do leftPillar.dispose();
+      do centerPillar.dispose();
+      do wall.dispose();
+      return;
+   }
+}

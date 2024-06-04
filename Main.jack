@@ -1,0 +1,13 @@
+/** 2048 game. */
+class Main {
+   function void main() {
+      var TwosGame game;
+      // start
+      let game = TwosGame.new();
+      do game.run();
+
+      // finish
+      do game.dispose();
+      return;
+   }
+}

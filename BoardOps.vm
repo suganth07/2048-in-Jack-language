@@ -1,0 +1,1102 @@
+function BoardOps.alter 1
+push argument 1
+push constant 1
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push argument 0
+call BoardOps.alterLeft 1
+pop local 0
+label IF_FALSE0
+push argument 1
+push constant 2
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push argument 0
+call BoardOps.alterUp 1
+pop local 0
+label IF_FALSE1
+push argument 1
+push constant 3
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push argument 0
+call BoardOps.alterRight 1
+pop local 0
+label IF_FALSE2
+push argument 1
+push constant 4
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push argument 0
+call BoardOps.alterDown 1
+pop local 0
+label IF_FALSE3
+push local 0
+return
+function BoardOps.updateMax 5
+push argument 0
+call Board.getNrows 1
+pop local 0
+push argument 0
+call Board.getNcols 1
+pop local 1
+push constant 0
+pop local 2
+label WHILE_EXP0
+push local 2
+push local 0
+lt
+not
+if-goto WHILE_END0
+push constant 0
+pop local 3
+label WHILE_EXP1
+push local 3
+push local 1
+lt
+not
+if-goto WHILE_END1
+push argument 0
+push local 2
+push local 3
+call Board.getBlockAt 3
+pop local 4
+push local 4
+call Block.getValue 1
+push static 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 4
+call Block.getValue 1
+pop static 0
+label IF_FALSE0
+push local 3
+push constant 1
+add
+pop local 3
+goto WHILE_EXP1
+label WHILE_END1
+push local 2
+push constant 1
+add
+pop local 2
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function BoardOps.half 5
+push argument 0
+call Board.getNrows 1
+pop local 0
+push argument 0
+call Board.getNcols 1
+pop local 1
+push constant 0
+pop local 2
+label WHILE_EXP0
+push local 2
+push local 0
+lt
+not
+if-goto WHILE_END0
+push constant 0
+pop local 3
+label WHILE_EXP1
+push local 3
+push local 1
+lt
+not
+if-goto WHILE_END1
+push argument 0
+push local 2
+push local 3
+call Board.getBlockAt 3
+pop local 4
+push local 4
+call Block.getValue 1
+push argument 1
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 4
+push argument 1
+push constant 2
+call Math.divide 2
+call Block.setValue 2
+pop temp 0
+push static 0
+push constant 2
+call Math.divide 2
+pop static 0
+label IF_FALSE0
+push local 3
+push constant 1
+add
+pop local 3
+goto WHILE_EXP1
+label WHILE_END1
+push local 2
+push constant 1
+add
+pop local 2
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function BoardOps.alterLeft 9
+push argument 0
+call Board.getNrows 1
+push argument 0
+call Board.getNcols 1
+call Board.new 2
+pop local 0
+push constant 0
+pop local 4
+label WHILE_EXP0
+push local 4
+push argument 0
+call Board.getNcols 1
+lt
+not
+if-goto WHILE_END0
+push constant 0
+pop local 3
+label WHILE_EXP1
+push local 3
+push argument 0
+call Board.getNrows 1
+lt
+not
+if-goto WHILE_END1
+push argument 0
+push local 3
+push local 4
+call Board.getBlockAt 3
+pop local 1
+push constant 0
+pop local 6
+push local 1
+call Block.isEmpty 1
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 4
+pop local 5
+push local 0
+push local 3
+push local 5
+call Board.getBlockAt 3
+pop local 2
+label WHILE_EXP2
+push local 5
+push constant 0
+gt
+push local 2
+call Block.isEmpty 1
+and
+not
+if-goto WHILE_END2
+push local 5
+push constant 1
+sub
+pop local 5
+push local 0
+push local 3
+push local 5
+call Board.getBlockAt 3
+pop local 2
+goto WHILE_EXP2
+label WHILE_END2
+push local 2
+call Block.isEmpty 1
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 0
+call BoardOps.updateMax 1
+pop temp 0
+push local 2
+push local 1
+call Block.getValue 1
+call Block.setValue 2
+pop temp 0
+push constant 0
+not
+pop local 6
+goto IF_END1
+label IF_FALSE1
+push local 2
+call Block.isTouched 1
+not
+push local 2
+call Block.getValue 1
+and
+push constant 2
+eq
+push local 1
+call Block.getValue 1
+push constant 2
+neg
+eq
+and
+pop local 7
+push local 2
+call Block.isTouched 1
+not
+push local 2
+call Block.getValue 1
+and
+push constant 2
+neg
+eq
+push local 1
+call Block.getValue 1
+push constant 2
+eq
+and
+pop local 8
+push local 7
+push local 8
+or
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 0
+push static 0
+call BoardOps.half 2
+pop temp 0
+push local 1
+call Block.unsetValue 1
+pop temp 0
+push local 2
+call Block.unsetValue 1
+pop temp 0
+push local 2
+call Block.touch 1
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_FALSE2
+push local 2
+call Block.isTouched 1
+not
+push local 2
+call Block.getValue 1
+push local 1
+call Block.getValue 1
+eq
+and
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push local 1
+call Block.getValue 1
+push constant 0
+lt
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 2
+push local 1
+call Block.getValue 1
+push constant 2
+neg
+call Math.multiply 2
+call Block.setValue 2
+pop temp 0
+goto IF_END4
+label IF_FALSE4
+push local 2
+push local 1
+call Block.getValue 1
+push constant 2
+call Math.multiply 2
+call Block.setValue 2
+pop temp 0
+label IF_END4
+push local 2
+call Block.touch 1
+pop temp 0
+push constant 0
+not
+pop local 6
+goto IF_END3
+label IF_FALSE3
+push local 0
+push local 3
+push local 5
+push constant 1
+add
+call Board.getBlockAt 3
+pop local 2
+push local 2
+push local 1
+call Block.getValue 1
+call Block.setValue 2
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_END3
+label IF_END1
+push local 6
+not
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push local 0
+push local 3
+push local 5
+call Board.getBlockAt 3
+pop local 2
+push local 2
+push local 1
+call Block.getValue 1
+call Block.setValue 2
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_FALSE5
+label IF_FALSE0
+push local 3
+push constant 1
+add
+pop local 3
+goto WHILE_EXP1
+label WHILE_END1
+push local 4
+push constant 1
+add
+pop local 4
+goto WHILE_EXP0
+label WHILE_END0
+push local 0
+return
+function BoardOps.alterUp 9
+push argument 0
+call Board.getNrows 1
+push argument 0
+call Board.getNcols 1
+call Board.new 2
+pop local 0
+push constant 0
+pop local 3
+label WHILE_EXP0
+push local 3
+push argument 0
+call Board.getNrows 1
+lt
+not
+if-goto WHILE_END0
+push constant 0
+pop local 4
+label WHILE_EXP1
+push local 4
+push argument 0
+call Board.getNcols 1
+lt
+not
+if-goto WHILE_END1
+push argument 0
+push local 3
+push local 4
+call Board.getBlockAt 3
+pop local 1
+push constant 0
+pop local 6
+push local 1
+call Block.isEmpty 1
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 3
+pop local 5
+push local 0
+push local 5
+push local 4
+call Board.getBlockAt 3
+pop local 2
+label WHILE_EXP2
+push local 5
+push constant 0
+gt
+push local 2
+call Block.isEmpty 1
+and
+not
+if-goto WHILE_END2
+push local 5
+push constant 1
+sub
+pop local 5
+push local 0
+push local 5
+push local 4
+call Board.getBlockAt 3
+pop local 2
+goto WHILE_EXP2
+label WHILE_END2
+push local 2
+call Block.isEmpty 1
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 2
+push local 1
+call Block.getValue 1
+call Block.setValue 2
+pop temp 0
+push local 0
+call BoardOps.updateMax 1
+pop temp 0
+push constant 0
+not
+pop local 6
+goto IF_END1
+label IF_FALSE1
+push local 2
+call Block.isTouched 1
+not
+push local 2
+call Block.getValue 1
+and
+push constant 2
+eq
+push local 1
+call Block.getValue 1
+push constant 2
+neg
+eq
+and
+pop local 7
+push local 2
+call Block.isTouched 1
+not
+push local 2
+call Block.getValue 1
+and
+push constant 2
+neg
+eq
+push local 1
+call Block.getValue 1
+push constant 2
+eq
+and
+pop local 8
+push local 7
+push local 8
+or
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 2
+call Block.unsetValue 1
+pop temp 0
+push local 0
+push static 0
+call BoardOps.half 2
+pop temp 0
+push local 1
+call Block.unsetValue 1
+pop temp 0
+push local 2
+call Block.touch 1
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_FALSE2
+push local 2
+call Block.isTouched 1
+not
+push local 2
+call Block.getValue 1
+push local 1
+call Block.getValue 1
+eq
+and
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push local 1
+call Block.getValue 1
+push constant 0
+lt
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 2
+push local 1
+call Block.getValue 1
+push constant 2
+neg
+call Math.multiply 2
+call Block.setValue 2
+pop temp 0
+goto IF_END4
+label IF_FALSE4
+push local 2
+push local 1
+call Block.getValue 1
+push constant 2
+call Math.multiply 2
+call Block.setValue 2
+pop temp 0
+label IF_END4
+push local 2
+call Block.touch 1
+pop temp 0
+push constant 0
+not
+pop local 6
+goto IF_END3
+label IF_FALSE3
+push local 0
+push local 5
+push constant 1
+add
+push local 4
+call Board.getBlockAt 3
+pop local 2
+push local 2
+push local 1
+call Block.getValue 1
+call Block.setValue 2
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_END3
+label IF_END1
+push local 6
+not
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push local 0
+push local 5
+push local 4
+call Board.getBlockAt 3
+pop local 2
+push local 2
+push local 1
+call Block.getValue 1
+call Block.setValue 2
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_FALSE5
+label IF_FALSE0
+push local 4
+push constant 1
+add
+pop local 4
+goto WHILE_EXP1
+label WHILE_END1
+push local 3
+push constant 1
+add
+pop local 3
+goto WHILE_EXP0
+label WHILE_END0
+push local 0
+return
+function BoardOps.alterRight 9
+push argument 0
+call Board.getNrows 1
+push argument 0
+call Board.getNcols 1
+call Board.new 2
+pop local 0
+push argument 0
+call Board.getNcols 1
+push constant 1
+sub
+pop local 4
+label WHILE_EXP0
+push local 4
+push constant 1
+neg
+gt
+not
+if-goto WHILE_END0
+push argument 0
+call Board.getNrows 1
+push constant 1
+sub
+pop local 3
+label WHILE_EXP1
+push local 3
+push constant 1
+neg
+gt
+not
+if-goto WHILE_END1
+push argument 0
+push local 3
+push local 4
+call Board.getBlockAt 3
+pop local 1
+push constant 0
+pop local 6
+push local 1
+call Block.isEmpty 1
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 4
+pop local 5
+push local 0
+push local 3
+push local 5
+call Board.getBlockAt 3
+pop local 2
+label WHILE_EXP2
+push local 5
+push argument 0
+call Board.getNcols 1
+push constant 1
+sub
+lt
+push local 2
+call Block.isEmpty 1
+and
+not
+if-goto WHILE_END2
+push local 5
+push constant 1
+add
+pop local 5
+push local 0
+push local 3
+push local 5
+call Board.getBlockAt 3
+pop local 2
+goto WHILE_EXP2
+label WHILE_END2
+push local 2
+call Block.isEmpty 1
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 2
+push local 1
+call Block.getValue 1
+call Block.setValue 2
+pop temp 0
+push local 0
+call BoardOps.updateMax 1
+pop temp 0
+push constant 0
+not
+pop local 6
+goto IF_END1
+label IF_FALSE1
+push local 2
+call Block.isTouched 1
+not
+push local 2
+call Block.getValue 1
+and
+push constant 2
+eq
+push local 1
+call Block.getValue 1
+push constant 2
+neg
+eq
+and
+pop local 7
+push local 2
+call Block.isTouched 1
+not
+push local 2
+call Block.getValue 1
+and
+push constant 2
+neg
+eq
+push local 1
+call Block.getValue 1
+push constant 2
+eq
+and
+pop local 8
+push local 7
+push local 8
+or
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 2
+call Block.unsetValue 1
+pop temp 0
+push local 0
+push static 0
+call BoardOps.half 2
+pop temp 0
+push local 1
+call Block.unsetValue 1
+pop temp 0
+push local 2
+call Block.touch 1
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_FALSE2
+push local 2
+call Block.isTouched 1
+not
+push local 2
+call Block.getValue 1
+push local 1
+call Block.getValue 1
+eq
+and
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push local 1
+call Block.getValue 1
+push constant 0
+lt
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 2
+push local 1
+call Block.getValue 1
+push constant 2
+neg
+call Math.multiply 2
+call Block.setValue 2
+pop temp 0
+goto IF_END4
+label IF_FALSE4
+push local 2
+push local 1
+call Block.getValue 1
+push constant 2
+call Math.multiply 2
+call Block.setValue 2
+pop temp 0
+label IF_END4
+push local 2
+call Block.touch 1
+pop temp 0
+push constant 0
+not
+pop local 6
+goto IF_END3
+label IF_FALSE3
+push local 0
+push local 3
+push local 5
+push constant 1
+sub
+call Board.getBlockAt 3
+pop local 2
+push local 2
+push local 1
+call Block.getValue 1
+call Block.setValue 2
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_END3
+label IF_END1
+push local 6
+not
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push local 0
+push local 3
+push local 5
+call Board.getBlockAt 3
+pop local 2
+push local 2
+push local 1
+call Block.getValue 1
+call Block.setValue 2
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_FALSE5
+label IF_FALSE0
+push local 3
+push constant 1
+sub
+pop local 3
+goto WHILE_EXP1
+label WHILE_END1
+push local 4
+push constant 1
+sub
+pop local 4
+goto WHILE_EXP0
+label WHILE_END0
+push local 0
+return
+function BoardOps.alterDown 9
+push argument 0
+call Board.getNrows 1
+push argument 0
+call Board.getNcols 1
+call Board.new 2
+pop local 0
+push argument 0
+call Board.getNrows 1
+push constant 1
+sub
+pop local 3
+label WHILE_EXP0
+push local 3
+push constant 1
+neg
+gt
+not
+if-goto WHILE_END0
+push argument 0
+call Board.getNcols 1
+push constant 1
+sub
+pop local 4
+label WHILE_EXP1
+push local 4
+push constant 1
+neg
+gt
+not
+if-goto WHILE_END1
+push argument 0
+push local 3
+push local 4
+call Board.getBlockAt 3
+pop local 1
+push constant 0
+pop local 6
+push local 1
+call Block.isEmpty 1
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 3
+pop local 5
+push local 0
+push local 5
+push local 4
+call Board.getBlockAt 3
+pop local 2
+label WHILE_EXP2
+push local 5
+push argument 0
+call Board.getNrows 1
+push constant 1
+sub
+lt
+push local 2
+call Block.isEmpty 1
+and
+not
+if-goto WHILE_END2
+push local 5
+push constant 1
+add
+pop local 5
+push local 0
+push local 5
+push local 4
+call Board.getBlockAt 3
+pop local 2
+goto WHILE_EXP2
+label WHILE_END2
+push local 2
+call Block.isEmpty 1
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 2
+push local 1
+call Block.getValue 1
+call Block.setValue 2
+pop temp 0
+push local 0
+call BoardOps.updateMax 1
+pop temp 0
+push constant 0
+not
+pop local 6
+goto IF_END1
+label IF_FALSE1
+push local 2
+call Block.isTouched 1
+not
+push local 2
+call Block.getValue 1
+and
+push constant 2
+eq
+push local 1
+call Block.getValue 1
+push constant 2
+neg
+eq
+and
+pop local 7
+push local 2
+call Block.isTouched 1
+not
+push local 2
+call Block.getValue 1
+and
+push constant 2
+neg
+eq
+push local 1
+call Block.getValue 1
+push constant 2
+eq
+and
+pop local 8
+push local 7
+push local 8
+or
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 2
+call Block.unsetValue 1
+pop temp 0
+push local 0
+push static 0
+call BoardOps.half 2
+pop temp 0
+push local 1
+call Block.unsetValue 1
+pop temp 0
+push local 2
+call Block.touch 1
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_FALSE2
+push local 2
+call Block.isTouched 1
+not
+push local 2
+call Block.getValue 1
+push local 1
+call Block.getValue 1
+eq
+and
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push local 1
+call Block.getValue 1
+push constant 0
+lt
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 2
+push local 1
+call Block.getValue 1
+push constant 2
+neg
+call Math.multiply 2
+call Block.setValue 2
+pop temp 0
+goto IF_END4
+label IF_FALSE4
+push local 2
+push local 1
+call Block.getValue 1
+push constant 2
+call Math.multiply 2
+call Block.setValue 2
+pop temp 0
+label IF_END4
+push local 2
+call Block.touch 1
+pop temp 0
+push constant 0
+not
+pop local 6
+goto IF_END3
+label IF_FALSE3
+push local 0
+push local 5
+push constant 1
+sub
+push local 4
+call Board.getBlockAt 3
+pop local 2
+push local 2
+push local 1
+call Block.getValue 1
+call Block.setValue 2
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_END3
+label IF_END1
+push local 6
+not
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push local 0
+push local 5
+push local 4
+call Board.getBlockAt 3
+pop local 2
+push local 2
+push local 1
+call Block.getValue 1
+call Block.setValue 2
+pop temp 0
+push constant 0
+not
+pop local 6
+label IF_FALSE5
+label IF_FALSE0
+push local 4
+push constant 1
+sub
+pop local 4
+goto WHILE_EXP1
+label WHILE_END1
+push local 3
+push constant 1
+sub
+pop local 3
+goto WHILE_EXP0
+label WHILE_END0
+push local 0
+return

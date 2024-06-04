@@ -1,0 +1,351 @@
+
+/** Helper functions for managing Board. */
+class BoardOps {
+   static int max;
+   /** Alter board by moving. Return an updated copy of the board. */
+
+   
+   function Board alter(Board board, int direction) {
+      var Board board_new;
+      if (direction = 1) { let board_new = BoardOps.alterLeft(board); }
+      if (direction = 2) { let board_new = BoardOps.alterUp(board); }
+      if (direction = 3) { let board_new = BoardOps.alterRight(board); }
+      if (direction = 4) { let board_new = BoardOps.alterDown(board); }
+
+      return board_new;
+   }
+
+
+   function void updateMax(Board board) {
+        var int nrows, ncols, r, c;
+        var Block block;
+
+        let nrows = board.getNrows();
+        let ncols = board.getNcols();
+        let r = 0;
+        while (r < nrows) {
+            let c = 0;
+            while (c < ncols) {
+               let block=board.getBlockAt(r, c);
+               if ((block.getValue()) > max){
+                  let max=(block.getValue());
+               }
+               let c = c + 1;
+            }
+            let r = r +1;
+        }
+            return;
+   }
+
+   function void half(Board board, int number) {
+        var int nrows, ncols, r, c;
+        var Block block;
+
+        let nrows = board.getNrows();
+        let ncols = board.getNcols();
+        let r = 0;
+        while (r < nrows) {
+            let c = 0;
+            while (c < ncols) {
+               let block=board.getBlockAt(r, c);
+               if ((block.getValue()) = number){
+                  do block.setValue(number/2);
+                  let max=max/2;
+               }
+               let c = c + 1;
+            }
+            let r = r +1;
+        }
+            return;
+    }
+
+   function Board alterLeft(Board board) {
+      var Board board_new;
+      var Block block, block_new;
+      var int r, c, c_new;
+      var boolean moved,val1,val2;
+
+      let board_new = Board.new(board.getNrows(), board.getNcols());
+
+      let c = 0;
+      while (c < board.getNcols()) {
+         let r = 0;
+         while (r < board.getNrows()) {
+            let block = board.getBlockAt(r, c);
+            let moved = false;
+            // Plan movement
+            if (~block.isEmpty()) {
+               // Get position of leftmost or first filled block to left
+               let c_new = c;
+               let block_new = board_new.getBlockAt(r, c_new);
+               while ((c_new > 0) & (block_new.isEmpty())) {
+                  let c_new = c_new - 1;
+                  let block_new = board_new.getBlockAt(r, c_new);
+               }
+               // If leftmost is empty, go there
+               if (block_new.isEmpty()) {
+                  do BoardOps.updateMax(board_new);
+                  do block_new.setValue(block.getValue());
+                  let moved = true;
+               }
+               else {
+                  // Combine
+                  let val1=((~block_new.isTouched()) & (block_new.getValue()) = 2) & (block.getValue()= -2);
+                  let val2=((~block_new.isTouched()) & (block_new.getValue()) = -2) & (block.getValue()= 2);
+                  if (val1 | val2){
+                     do BoardOps.half(board_new,max);
+                     do block.unsetValue();
+                     do block_new.unsetValue();
+                     do block_new.touch();
+                     let moved = true;
+                  }
+
+                  if ((~block_new.isTouched()) & (block_new.getValue() = block.getValue())) {
+                     if(block.getValue()<0){
+                        do block_new.setValue(block.getValue() * -2);
+                     }
+                     else{
+                        do block_new.setValue(block.getValue() * 2);
+                     }
+                     do block_new.touch();
+                     let moved = true;
+                  }
+                  // Stop next to first filled block
+                  else {
+                     let block_new = board_new.getBlockAt(r, c_new + 1);
+                     do block_new.setValue(block.getValue());
+                     let moved = true;
+                  }
+               }
+               // If can't move, stay
+               if (~moved) {
+                  let block_new = board_new.getBlockAt(r, c_new);
+                  do block_new.setValue(block.getValue());
+                  let moved = true;
+               }
+            }
+            let r = r + 1;
+         }
+         let c = c + 1;
+      }
+      return board_new;
+   }
+
+   function Board alterUp(Board board) {
+      var Board board_new;
+      var Block block, block_new;
+      var int r, c, r_new;
+      var boolean moved,val1,val2;
+
+      let board_new = Board.new(board.getNrows(), board.getNcols());
+
+      let r = 0;
+      while (r < board.getNrows()) {
+         let c = 0;
+         while (c < board.getNcols()) {
+            let block = board.getBlockAt(r, c);
+            let moved = false;
+            // Plan movement
+            if (~block.isEmpty()) {
+               // Get position of top or first filled block above
+               let r_new = r;
+               let block_new = board_new.getBlockAt(r_new, c);
+               while ((r_new > 0) & (block_new.isEmpty())) {
+                  let r_new = r_new - 1;
+                  let block_new = board_new.getBlockAt(r_new, c);
+               }
+               // If top is empty, go there
+               if (block_new.isEmpty()) {
+                  do block_new.setValue(block.getValue());
+                  do BoardOps.updateMax(board_new);
+                  let moved = true;
+               }
+               else {
+                  // Combine
+                  let val1=((~block_new.isTouched()) & (block_new.getValue()) = 2) & (block.getValue()= -2);
+                  let val2=((~block_new.isTouched()) & (block_new.getValue()) = -2) & (block.getValue()= 2);
+                  if (val1 | val2){
+                     do block_new.unsetValue();
+                     do BoardOps.half(board_new,max);
+                     do block.unsetValue();
+   
+                     do block_new.touch();
+                     let moved = true;
+                  }
+                  if ((~block_new.isTouched()) & (block_new.getValue() = block.getValue())) {
+                     if(block.getValue()<0){
+                     do block_new.setValue(block.getValue() * -2);
+                     }
+                     else{
+                        do block_new.setValue(block.getValue() * 2);
+                     }
+                     do block_new.touch();
+                     let moved = true;
+                  }
+                  // Stop next to first filled block
+                  else {
+                     let block_new = board_new.getBlockAt(r_new + 1, c);
+                     do block_new.setValue(block.getValue());
+                     let moved = true;
+                  }
+               }
+               // I don't remember why these lines exist for just up and down...
+               // let r_new = r_new + 1;
+               // If can't move, stay
+               if (~moved) {
+                  let block_new = board_new.getBlockAt(r_new, c);
+                  do block_new.setValue(block.getValue());
+                  let moved = true;
+               }
+            }
+            let c = c + 1;
+         }
+         let r = r + 1;
+      }
+      return board_new;
+   }
+
+   function Board alterRight(Board board) {
+      var Board board_new;
+      var Block block, block_new;
+      var int r, c, c_new;
+      var boolean moved,val1,val2;
+
+      let board_new = Board.new(board.getNrows(), board.getNcols());
+
+      let c = board.getNcols() - 1;
+      while (c > -1) {
+         let r = board.getNrows() - 1;
+         while (r > -1) {
+            let block = board.getBlockAt(r, c);
+            let moved = false;
+            // Plan movement
+            if (~block.isEmpty()) {
+               // Get position of rightmost or first filled block to right
+               let c_new = c;
+               let block_new = board_new.getBlockAt(r, c_new);
+               while ((c_new < (board.getNcols() - 1)) & (block_new.isEmpty())) {
+                  let c_new = c_new + 1;
+                  let block_new = board_new.getBlockAt(r, c_new);
+               }
+               // If rightmost is empty, go there
+               if (block_new.isEmpty()) {
+                  do block_new.setValue(block.getValue());
+                  do BoardOps.updateMax(board_new);
+                  let moved = true;
+               }
+               else {
+                  // Combine
+                  let val1=((~block_new.isTouched()) & (block_new.getValue()) = 2) & (block.getValue()= -2);
+                  let val2=((~block_new.isTouched()) & (block_new.getValue()) = -2) & (block.getValue()= 2);
+                  if (val1 | val2){
+                     do block_new.unsetValue();
+                     do BoardOps.half(board_new,max);
+                     do block.unsetValue();
+   
+                     do block_new.touch();
+                     let moved = true;
+                  }
+                  if ((~block_new.isTouched()) & (block_new.getValue() = block.getValue())) {
+                     if(block.getValue()<0){
+                     do block_new.setValue(block.getValue() * -2);
+                     }
+                     else{
+                        do block_new.setValue(block.getValue() * 2);
+                     }
+                     do block_new.touch();
+                     let moved = true;
+                  }
+                  // Stop next to first filled block
+                  else {
+                     let block_new = board_new.getBlockAt(r, c_new - 1);
+                     do block_new.setValue(block.getValue());
+                     let moved = true;
+                  }
+               }
+               // If can't move, stay
+               if (~moved) {
+                  let block_new = board_new.getBlockAt(r, c_new);
+                  do block_new.setValue(block.getValue());
+                  let moved = true;
+               }
+            }
+            let r = r - 1;
+         }
+         let c = c - 1;
+      }
+      return board_new;
+   }
+
+   function Board alterDown(Board board) {
+      var Board board_new;
+      var Block block, block_new;
+      var int r, c, r_new;
+      var boolean moved,val1,val2;
+
+      let board_new = Board.new(board.getNrows(), board.getNcols());
+
+      let r = board.getNrows() - 1;
+      while (r > -1) {
+         let c = board.getNcols() - 1;
+         while (c > -1) {
+            let block = board.getBlockAt(r, c);
+            let moved = false;
+            // Plan movement
+            if (~block.isEmpty()) {
+               // Get position of bottom or first filled block below
+               let r_new = r;
+               let block_new = board_new.getBlockAt(r_new, c);
+               while ((r_new < (board.getNrows() - 1)) & (block_new.isEmpty())) {
+                  let r_new = r_new + 1;
+                  let block_new = board_new.getBlockAt(r_new, c);
+               }
+               // If bottom is empty, go there
+               if (block_new.isEmpty()) {
+                  do block_new.setValue(block.getValue());
+                  do BoardOps.updateMax(board_new);
+                  let moved = true;
+               }
+               else {
+                  // Combine
+                  let val1=((~block_new.isTouched()) & (block_new.getValue()) = 2) & (block.getValue()= -2);
+                  let val2=((~block_new.isTouched()) & (block_new.getValue()) = -2) & (block.getValue()= 2);
+                  if (val1 | val2){
+                     do block_new.unsetValue();
+                     do BoardOps.half(board_new,max);
+                     do block.unsetValue();
+   
+                     do block_new.touch();
+                     let moved = true;
+                  }
+                  if ((~block_new.isTouched()) & (block_new.getValue() = block.getValue())) {
+                     if(block.getValue()<0){
+                     do block_new.setValue(block.getValue() * -2);
+                     }
+                     else{
+                        do block_new.setValue(block.getValue() * 2);
+                     }
+                     do block_new.touch();
+                     let moved = true;
+                  }
+                  // Stop next to first filled block
+                  else {
+                     let block_new = board_new.getBlockAt(r_new - 1, c);
+                     do block_new.setValue(block.getValue());
+                     let moved = true;
+                  }
+               }
+               if (~moved) {
+                  let block_new = board_new.getBlockAt(r_new, c);
+                  do block_new.setValue(block.getValue());
+                  let moved = true;
+               }
+            }
+            let c = c - 1;
+         }
+         let r = r - 1;
+      }
+      return board_new;
+   }
+
+}
